@@ -3,6 +3,7 @@ import express, { Application, Request, Response } from "express";
 import config from "./config";
 import { userRoutes } from "./modules/user/user.route";
 import { authRoutes } from "./modules/auth/auth.route";
+import { globalErrorHandler } from "./middleware/globalErrorHandler";
 const app: Application = express();
 
 app.use(
@@ -27,4 +28,5 @@ app.get("/", (req: Request, res: Response) => {
 app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);
 
+app.use(globalErrorHandler);
 export default app;
