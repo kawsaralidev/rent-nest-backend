@@ -17,7 +17,7 @@ app.use(express.urlencoded({ extended: true }));
 app.get("/", (req: Request, res: Response) => {
   res.json({
     success: true,
-    message: "RentNest Backend Server Running 🚀",
+    message: "RentNest Backend Server Running ",
   });
 });
 
