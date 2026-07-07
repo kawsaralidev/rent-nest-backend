@@ -1,3 +1,4 @@
+import { Prisma } from "../../../generated/prisma/client";
 import prisma from "../../lib/prisma";
 import { TCreateProperty } from "./property.interface";
 
@@ -38,8 +39,40 @@ const createPropertyIntoDB = async (
   return result;
 };
 
-const getAllPropertiesFromDB = async () => {
-  const result = await prisma.property.findMany({
+const getAllPropertiesFromDB = async (query: Record<string, string>) => {
+  const whereConditions: Prisma.PropertyWhereInput = {};
+
+  if (query.location) {
+    whereConditions.location = {
+      contains: query.location,
+      mode: "insensitive",
+    };
+  }
+
+  if (query.categoryId) {
+    whereConditions.categoryId = query.categoryId;
+  }
+
+  if (query.minPrice || query.maxPrice) {
+    whereConditions.price = {};
+
+    if (query.minPrice) {
+      whereConditions.price.gte = Number(query.minPrice);
+    }
+
+    if (query.maxPrice) {
+      whereConditions.price.lte = Number(query.maxPrice);
+    }
+  }
+
+  if (query.amenity) {
+    whereConditions.amenities = {
+      has: query.amenity,
+    };
+  }
+
+  const properties = await prisma.property.findMany({
+    where: whereConditions,
     include: {
       landlord: {
         omit: {
@@ -53,7 +86,7 @@ const getAllPropertiesFromDB = async () => {
     },
   });
 
-  return result;
+  return properties;
 };
 
 const getSinglePropertyFromDB = async (propertyId: string) => {
