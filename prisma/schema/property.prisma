@@ -6,6 +6,8 @@ model Property {
   price        Decimal
   availability Boolean  @default(true)
 
+  amenities    String[]
+
   landlordId   String
   categoryId   String
 
