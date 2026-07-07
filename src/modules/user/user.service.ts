@@ -5,7 +5,11 @@ import { TRegisterUser } from "./user.interface";
 import { Role } from "../../../generated/prisma/enums";
 
 const registerUserIntoDB = async (payload: TRegisterUser) => {
-  const { name, email, password } = payload;
+  const { name, email, password, role } = payload;
+
+  if (role === Role.ADMIN) {
+    throw new Error("You cannot register as admin");
+  }
 
   const isUserExist = await prisma.user.findUnique({
     where: {
@@ -24,7 +28,7 @@ const registerUserIntoDB = async (payload: TRegisterUser) => {
       name,
       email,
       password: hashedPassword,
-      role: Role.TENANT,
+      role,
     },
     omit: {
       password: true,
