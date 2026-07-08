@@ -11,4 +11,6 @@ model Payment {
   updatedAt       DateTime        @updatedAt
 
   rentalRequest   RentalRequest   @relation(fields: [rentalRequestId], references: [id])
+
+  @@map("payments")
 }

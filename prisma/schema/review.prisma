@@ -13,4 +13,6 @@ model Review {
   tenant          User            @relation(fields: [tenantId], references: [id])
   property        Property        @relation(fields: [propertyId], references: [id])
   rentalRequest   RentalRequest   @relation(fields: [rentalRequestId], references: [id])
+
+  @@map("reviews")
 }
