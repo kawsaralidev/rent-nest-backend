@@ -16,6 +16,23 @@ const createRentalIntoDB = async (payload: TCreateRental, tenantId: string) => {
   if (!property.availability) {
     throw new Error("Property is not available for rent");
   }
+  if (property.landlordId === tenantId) {
+    throw new Error("You cannot rent your own property");
+  }
+
+  const existingPendingRequest = await prisma.rentalRequest.findFirst({
+    where: {
+      tenantId,
+      propertyId: payload.propertyId,
+      status: RentalRequestStatus.PENDING,
+    },
+  });
+
+  if (existingPendingRequest) {
+    throw new Error(
+      "You already have a pending rental request for this property",
+    );
+  }
 
   const rentalRequest = await prisma.rentalRequest.create({
     data: {

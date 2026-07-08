@@ -103,6 +103,9 @@ const confirmPaymentIntoDB = async (payload: TConfirmPayment) => {
     where: {
       transactionId: session.id,
     },
+    include: {
+      rentalRequest: true,
+    },
   });
 
   if (!payment) {
@@ -132,9 +135,17 @@ const confirmPaymentIntoDB = async (payload: TConfirmPayment) => {
     },
   });
 
+  await prisma.property.update({
+    where: {
+      id: payment.rentalRequest.propertyId,
+    },
+    data: {
+      availability: false,
+    },
+  });
+
   return updatedPayment;
 };
-
 const getMyPaymentsFromDB = async (tenantId: string) => {
   const result = await prisma.payment.findMany({
     where: {
