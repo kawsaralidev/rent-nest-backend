@@ -3,7 +3,7 @@ model Payment {
   transactionId   String          @unique
   rentalRequestId String          @unique
   amount          Decimal
-  provider        PaymentProvider
+  method          String
   status          PaymentStatus   @default(PENDING)
   paidAt          DateTime?
 
