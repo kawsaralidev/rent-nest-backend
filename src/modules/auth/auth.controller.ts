@@ -3,9 +3,12 @@ import httpStatus from "http-status";
 import { catchAsync } from "../../utils/catchAysnc";
 import { sendResponse } from "../../utils/sendResponse";
 import { authService } from "./auth.service";
+import { authValidation } from "./auth.validation";
 
 const loginUser = catchAsync(async (req: Request, res: Response) => {
   const payload = req.body;
+
+  authValidation.validateLoginPayload(payload);
 
   const user = await authService.loginUser(payload);
 

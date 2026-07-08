@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import { adminService } from "./admin.service";
 import { catchAsync } from "../../utils/catchAysnc";
 import { sendResponse } from "../../utils/sendResponse";
+import { adminValidation } from "./admin.validation";
 
 const getAllUsers = catchAsync(async (req: Request, res: Response) => {
   const result = await adminService.getAllUsersFromDB();
@@ -17,12 +18,11 @@ const getAllUsers = catchAsync(async (req: Request, res: Response) => {
 
 const updateUserStatus = catchAsync(async (req: Request, res: Response) => {
   const payload = req.body;
-  const userId = req.params.id;
+  const userId = req.params.id as string;
 
-  const result = await adminService.updateUserStatusIntoDB(
-    payload,
-    userId as string,
-  );
+  adminValidation.validateUpdateUserStatusPayload(payload);
+
+  const result = await adminService.updateUserStatusIntoDB(payload, userId);
 
   sendResponse(res, {
     success: true,

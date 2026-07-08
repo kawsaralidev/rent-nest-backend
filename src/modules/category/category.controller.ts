@@ -3,9 +3,14 @@ import { Request, Response } from "express";
 import { sendResponse } from "../../utils/sendResponse";
 import { categoryService } from "./category.service";
 import { catchAsync } from "../../utils/catchAysnc";
+import { categoryValidation } from "./category.validation";
 
-const createCategory = catchAsync(async (req, res) => {
-  const result = await categoryService.createCategory(req.body);
+const createCategory = catchAsync(async (req: Request, res: Response) => {
+  const payload = req.body;
+
+  categoryValidation.validateCategoryPayload(payload);
+
+  const result = await categoryService.createCategory(payload);
 
   sendResponse(res, {
     success: true,
@@ -29,7 +34,7 @@ const getAllCategories = catchAsync(async (req: Request, res: Response) => {
 const updateCategory = catchAsync(async (req: Request, res: Response) => {
   const categoryId = req.params.id as string;
   const payload = req.body;
-
+  categoryValidation.validateCategoryPayload(payload);
   const result = await categoryService.updateCategory(categoryId, payload);
 
   sendResponse(res, {

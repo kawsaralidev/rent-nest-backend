@@ -3,12 +3,16 @@ import { Request, Response } from "express";
 import { PropertyService } from "./property.service";
 import { catchAsync } from "../../utils/catchAysnc";
 import { sendResponse } from "../../utils/sendResponse";
+import { propertyValidation } from "./property.validation";
 
 const createProperty = catchAsync(async (req: Request, res: Response) => {
   const landlordId = res.locals.user.id;
+  const payload = req.body;
+
+  propertyValidation.validateCreatePropertyPayload(payload);
 
   const result = await PropertyService.createPropertyIntoDB(
-    req.body,
+    payload,
     landlordId,
   );
 
@@ -49,10 +53,13 @@ const getSingleProperty = catchAsync(async (req: Request, res: Response) => {
 const updateProperty = catchAsync(async (req, res) => {
   const propertyId = req.params.id as string;
   const landlordId = res.locals.user.id;
+  const payload = req.body;
+
+  propertyValidation.validateUpdatePropertyPayload(payload);
 
   const updatedProperty = await PropertyService.updatePropertyIntoDB(
     propertyId,
-    req.body,
+    payload,
     landlordId,
   );
 

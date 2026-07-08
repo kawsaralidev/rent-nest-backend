@@ -3,11 +3,15 @@ import { catchAsync } from "../../utils/catchAysnc";
 import { sendResponse } from "../../utils/sendResponse";
 import { rentalService } from "./rental.service";
 import { Request, Response } from "express";
+import { rentalValidation } from "./rental.validation";
 
 const createRental = catchAsync(async (req: Request, res: Response) => {
   const tenantId = res.locals.user.id;
+  const payload = req.body;
 
-  const result = await rentalService.createRentalIntoDB(req.body, tenantId);
+  rentalValidation.validateCreateRentalPayload(payload);
+
+  const result = await rentalService.createRentalIntoDB(payload, tenantId);
 
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
@@ -59,14 +63,16 @@ const getLandlordRequests = catchAsync(async (req, res) => {
 
 const updateRentalStatus = catchAsync(async (req: Request, res: Response) => {
   const landlordId = res.locals.user.id;
-  const rentalId = req.params.id;
+  const rentalId = req.params.id as string;
+  const payload = req.body;
+
+  rentalValidation.validateUpdateRentalStatusPayload(payload);
 
   const result = await rentalService.updateRentalStatusIntoDB(
-    req.body,
+    payload,
     landlordId,
-    rentalId as string,
+    rentalId,
   );
-
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
