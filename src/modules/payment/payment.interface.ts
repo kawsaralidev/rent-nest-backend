@@ -3,5 +3,5 @@ export type TCreatePayment = {
 };
 
 export type TConfirmPayment = {
-  paymentIntentId: string;
+  sessionId: string;
 };
