@@ -1,20 +1,33 @@
 {
+  // Visit https://aka.ms/tsconfig to read more about this file
   "compilerOptions": {
+    // File Layout
     "outDir": "./dist",
-    "module": "ESNext",
+
+    // Environment Settings
+    "module": "esnext",
+    "target": "esnext",
     "moduleResolution": "bundler",
-    "target": "ES2023",
     "types": ["node"],
+    "typeRoots": ["./node_modules/@types", "./src/types"],
+
+    // Other Outputs
     "sourceMap": true,
     "declaration": true,
     "declarationMap": true,
+
+    // Stricter Typechecking Options
     "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+
+    // Recommended Options
     "strict": true,
+    // "verbatimModuleSyntax": true,
     "isolatedModules": true,
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true
   },
-  // "include": ["src"],
+  // "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
 }
