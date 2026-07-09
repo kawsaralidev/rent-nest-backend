@@ -4,7 +4,7 @@ import { JwtPayload } from "jsonwebtoken";
 import { jwtUtils } from "../utils/jwt";
 import { Role, UserStatus } from "../../generated/prisma/enums";
 import { catchAsync } from "../utils/catchAysnc";
-import config from "../config";
+import config from "../config/index";
 import prisma from "../lib/prisma";
 
 export const auth = (...requiredRoles: Role[]) => {
