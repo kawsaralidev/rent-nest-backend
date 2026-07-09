@@ -4,7 +4,7 @@ import {
 } from "../../../generated/prisma/enums";
 import prisma from "../../lib/prisma";
 import stripe from "../../lib/stripe";
-import config from "../../config";
+import config from "../../config/index";
 import Stripe from "stripe";
 import { TCreatePayment } from "./payment.interface";
 import { Request, Response } from "express";
