@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import prisma from "../../lib/prisma";
-import config from "../../config/index";
+import config from "../../config";
 import { TRegisterUser } from "./user.interface";
 import { Role } from "../../../generated/prisma/enums";
 
