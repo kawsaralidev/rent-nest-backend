@@ -1,8 +1,7 @@
 import httpStatus from "http-status";
-
 import { sendResponse } from "../../utils/sendResponse";
 import { paymentService } from "./payment.service";
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { catchAsync } from "../../utils/catchAysnc";
 
 const createPayment = catchAsync(async (req: Request, res: Response) => {
@@ -18,17 +17,24 @@ const createPayment = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const confirmPayment = catchAsync(async (req: Request, res: Response) => {
-  const result = await paymentService.confirmPaymentIntoDB(req.body);
 
-  sendResponse(res, {
-    success: true,
-    statusCode: httpStatus.OK,
-    message: "Payment confirmed successfully",
-    data: result,
-  });
-});
-const getMyPayments = catchAsync(async (req, res) => {
+const stripeWebhook = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    await paymentService.stripeWebhookIntoDB(req);
+
+    res.status(httpStatus.OK).json({
+      received: true,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getMyPayments = catchAsync(async (req: Request, res: Response) => {
   const tenantId = res.locals.user.id;
 
   const result = await paymentService.getMyPaymentsFromDB(tenantId);
@@ -41,7 +47,7 @@ const getMyPayments = catchAsync(async (req, res) => {
   });
 });
 
-const getSinglePayment = catchAsync(async (req, res) => {
+const getSinglePayment = catchAsync(async (req: Request, res: Response) => {
   const tenantId = res.locals.user.id;
 
   const result = await paymentService.getSinglePaymentFromDB(
@@ -59,7 +65,7 @@ const getSinglePayment = catchAsync(async (req, res) => {
 
 export const paymentController = {
   createPayment,
-  confirmPayment,
+  stripeWebhook,
   getMyPayments,
   getSinglePayment,
 };

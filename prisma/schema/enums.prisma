@@ -17,7 +17,6 @@ enum RentalRequestStatus {
   COMPLETED
 }
 
-
 enum PaymentStatus {
   PENDING
   COMPLETED

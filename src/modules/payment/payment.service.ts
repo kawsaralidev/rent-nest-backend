@@ -5,7 +5,9 @@ import {
 import prisma from "../../lib/prisma";
 import stripe from "../../lib/stripe";
 import config from "../../config";
-import { TConfirmPayment, TCreatePayment } from "./payment.interface";
+import Stripe from "stripe";
+import { TCreatePayment } from "./payment.interface";
+import { Request, Response } from "express";
 
 const createPaymentIntoDB = async (
   payload: TCreatePayment,
@@ -88,16 +90,24 @@ const createPaymentIntoDB = async (
   };
 };
 
-const confirmPaymentIntoDB = async (payload: TConfirmPayment) => {
-  const session = await stripe.checkout.sessions.retrieve(payload.sessionId);
+const stripeWebhookIntoDB = async (req: Request) => {
+  const signature = req.headers["stripe-signature"] as string;
 
-  if (!session) {
-    throw new Error("Checkout session not found");
+  if (!signature) {
+    throw new Error("Stripe signature is missing");
   }
 
-  if (session.payment_status !== "paid") {
-    throw new Error("Payment is not completed");
+  const event = stripe.webhooks.constructEvent(
+    req.body,
+    signature,
+    config.stripe_webhook_secret as string,
+  );
+
+  if (event.type !== "checkout.session.completed") {
+    return;
   }
+
+  const session = event.data.object as Stripe.Checkout.Session;
 
   const payment = await prisma.payment.findUnique({
     where: {
@@ -113,10 +123,10 @@ const confirmPaymentIntoDB = async (payload: TConfirmPayment) => {
   }
 
   if (payment.status === PaymentStatus.COMPLETED) {
-    throw new Error("Payment already confirmed");
+    return;
   }
 
-  const updatedPayment = await prisma.payment.update({
+  await prisma.payment.update({
     where: {
       transactionId: session.id,
     },
@@ -143,9 +153,8 @@ const confirmPaymentIntoDB = async (payload: TConfirmPayment) => {
       availability: false,
     },
   });
-
-  return updatedPayment;
 };
+
 const getMyPaymentsFromDB = async (tenantId: string) => {
   const result = await prisma.payment.findMany({
     where: {
@@ -214,7 +223,7 @@ const getSinglePaymentFromDB = async (paymentId: string, tenantId: string) => {
 
 export const paymentService = {
   createPaymentIntoDB,
-  confirmPaymentIntoDB,
+  stripeWebhookIntoDB,
   getMyPaymentsFromDB,
   getSinglePaymentFromDB,
 };

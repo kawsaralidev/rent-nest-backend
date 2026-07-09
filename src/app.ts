@@ -12,6 +12,7 @@ import { landlordRoutes } from "./modules/landlord/landlord.route";
 import { paymentRoutes } from "./modules/payment/payment.route";
 import { reviewRoutes } from "./modules/review/review.route";
 import { adminRoutes } from "./modules/admin/admin.route";
+import { paymentPageRoutes } from "./modules/payment/payment.page.route";
 const app: Application = express();
 
 app.use(
@@ -20,6 +21,8 @@ app.use(
     credentials: true,
   }),
 );
+app.use("/api/payments/webhook", express.raw({ type: "application/json" }));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -42,6 +45,7 @@ app.use("/api/landlord", landlordRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/payment", paymentPageRoutes);
 
 app.use((req: Request, res: Response) => {
   res.status(404).json({
