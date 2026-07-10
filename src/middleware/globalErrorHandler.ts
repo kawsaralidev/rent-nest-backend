@@ -44,5 +44,6 @@ export const globalErrorHandler = (
     statusCode,
     name: errorName,
     message: errorMessage,
+    errorDetails: err.errorDetails || [],
   });
 };
