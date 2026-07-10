@@ -7,7 +7,7 @@
     "dev": "tsx watch src/server.ts",
     "build": "prisma generate",
     "start": "tsx src/server.ts",
-    "stripe:webhook": "stripe listen --forward-to localhost:5000/api/payments/webhook"
+    "stripe:webhook": "https://rent-nest-backend-bl08.onrender.com/api/payments/webhook"
   },
   "keywords": [],
   "author": "",

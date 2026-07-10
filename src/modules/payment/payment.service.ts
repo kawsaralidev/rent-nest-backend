@@ -97,18 +97,20 @@ const stripeWebhookIntoDB = async (req: Request) => {
     throw new Error("Stripe signature is missing");
   }
 
+  console.log("Webhook Called");
+  const payload = req.body;
   const event = stripe.webhooks.constructEvent(
-    req.body,
+    payload,
     signature,
     config.stripe_webhook_secret as string,
   );
-
+  console.log("Event:", event.type);
   if (event.type !== "checkout.session.completed") {
     return;
   }
 
   const session = event.data.object as Stripe.Checkout.Session;
-
+  console.log("Session ID:", session.id);
   const payment = await prisma.payment.findUnique({
     where: {
       transactionId: session.id,
@@ -117,6 +119,7 @@ const stripeWebhookIntoDB = async (req: Request) => {
       rentalRequest: true,
     },
   });
+  console.log("Payment:", payment);
 
   if (!payment) {
     throw new Error("Payment not found");

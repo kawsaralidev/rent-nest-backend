@@ -17,4 +17,10 @@ router.patch(
   rentalController.updateRentalStatus,
 );
 
+router.patch(
+  "/requests/:id/complete",
+  auth(Role.LANDLORD),
+  rentalController.completeRental,
+);
+
 export const landlordRoutes = router;

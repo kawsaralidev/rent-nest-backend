@@ -218,10 +218,64 @@ const updateRentalStatusIntoDB = async (
   return result;
 };
 
+const completeRentalIntoDB = async (rentalId: string, landlordId: string) => {
+  const rentalRequest = await prisma.rentalRequest.findUnique({
+    where: {
+      id: rentalId,
+    },
+    include: {
+      property: true,
+    },
+  });
+
+  if (!rentalRequest) {
+    throw new Error("Rental request not found");
+  }
+
+  if (rentalRequest.property.landlordId !== landlordId) {
+    throw new Error("Unauthorized access");
+  }
+
+  if (rentalRequest.status !== RentalRequestStatus.ACTIVE) {
+    throw new Error("Only active rentals can be completed");
+  }
+
+  const result = await prisma.rentalRequest.update({
+    where: {
+      id: rentalId,
+    },
+    data: {
+      status: RentalRequestStatus.COMPLETED,
+    },
+    include: {
+      tenant: {
+        omit: {
+          password: true,
+        },
+      },
+      property: {
+        include: {
+          category: true,
+          landlord: {
+            omit: {
+              password: true,
+            },
+          },
+        },
+      },
+      payment: true,
+      review: true,
+    },
+  });
+
+  return result;
+};
+
 export const rentalService = {
   createRentalIntoDB,
   getMyRentalsFromDB,
   getSingleRentalFromDB,
   getLandlordRequestsFromDB,
   updateRentalStatusIntoDB,
+  completeRentalIntoDB,
 };

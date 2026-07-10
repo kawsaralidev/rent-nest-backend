@@ -13,7 +13,7 @@ const registerUserIntoDB = async (payload: TRegisterUser) => {
 
   const isUserExist = await prisma.user.findUnique({
     where: {
-      email,
+      email: email.trim().toLowerCase(),
     },
   });
 
@@ -26,7 +26,7 @@ const registerUserIntoDB = async (payload: TRegisterUser) => {
   const newUser = await prisma.user.create({
     data: {
       name,
-      email,
+      email: email.trim().toLowerCase(),
       password: hashedPassword,
       role,
     },
