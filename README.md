@@ -8,6 +8,10 @@ https://rent-nest-backend-bl08.onrender.com
 
 ---
 
+## API Documentation
+
+https://documenter.getpostman.com/view/19949108/2sBY4LRhTb
+
 ## 📌 Features
 
 ### Authentication
@@ -186,7 +190,7 @@ Password: 123456
 
 ---
 
-## API Documentation
+## Documentation
 
 The complete Postman Collection is included in this repository.
 
